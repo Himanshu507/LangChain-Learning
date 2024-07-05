@@ -14,6 +14,6 @@ chain = RetrievalQA.from_chain_type(
     chain_type="stuff"
 )
 
-result = chain.run("What happened on 15th May 2023?")
+result = chain.run("explain the code line by line of this method get_price_history()?")
 
 print(result)

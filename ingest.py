@@ -1,6 +1,10 @@
 from chromadb import Settings
-from langchain_community.document_loaders import TextLoader
-from langchain.text_splitter import CharacterTextSplitter
+from langchain_community.document_loaders import PythonLoader
+from langchain_community.document_loaders import DirectoryLoader
+from langchain_text_splitters import (
+    Language,
+    RecursiveCharacterTextSplitter,
+)
 from langchain_community.vectorstores import Chroma
 from utils import Utils
 
@@ -13,14 +17,19 @@ CHROMA_SETTINGS = Settings(
 )
 
 # Split text
-text_splitter = CharacterTextSplitter(
-    separator='\n',
-    chunk_size=200,
-    chunk_overlap=0,
+text_splitter = RecursiveCharacterTextSplitter.from_language(
+    language=Language.PYTHON, chunk_size=400, chunk_overlap=100
 )
+#python_docs = python_splitter.create_documents([PYTHON_CODE])
+# text_splitter = CharacterTextSplitter(
+#     separator='\n',
+#     chunk_size=200,
+#     chunk_overlap=0,
+# )
 
 # Load and split documents
-loader = TextLoader('text.txt')
+loader = DirectoryLoader('./dataset', glob="**/*.py", use_multithreading=True, loader_cls=PythonLoader,
+                         show_progress=True)  # TextLoader('text.txt')
 docs = loader.load_and_split(text_splitter)
 
 # Create Chroma vector store with embeddings
