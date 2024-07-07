@@ -1,6 +1,16 @@
 from langchain.chains.retrieval_qa.base import RetrievalQA
 from redundant_filter_retriever import RedundantFilterRetriever
 from utils import Utils
+import warnings
+import logging
+import atexit
+
+
+# Suppress future warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
+# Suppress detailed logging from llama_model_loader or other specific libraries
+logging.getLogger("llama_model_loader").setLevel(logging.ERROR)
 
 
 device_type = "mps"  # "mps" for mobile phones, "cpu" for CPU
@@ -14,6 +24,23 @@ chain = RetrievalQA.from_chain_type(
     chain_type="stuff"
 )
 
-result = chain.run("explain the code line by line of this method get_price_history()?")
+def cleanup():
+    # Add any necessary cleanup code here
+    if hasattr(chat, 'close'):
+        chat.close()
 
-print(result)
+atexit.register(cleanup)
+
+# result = chain.run("explain the code line by line of this method get_price_history()?")
+# print(result)
+
+while True:
+    query = input("\n\nEnter your question ('exit' to quit): ")
+    if query.lower() == "exit":
+        print("Exiting the Q&A loop. Goodbye!")
+        break
+
+    result = chain.run(query)
+    print(result)
+
+cleanup()

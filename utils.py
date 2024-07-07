@@ -4,7 +4,16 @@ from langchain_community.llms.huggingface_pipeline import HuggingFacePipeline
 from transformers import pipeline, GenerationConfig
 from load_models import load_quantized_model_gguf_ggml, load_quantized_model_awq, load_quantized_model_qptq, \
     load_full_model, MAX_NEW_TOKENS
+import warnings
+import logging
+import atexit
 
+
+# Suppress future warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
+# Suppress detailed logging from llama_model_loader or other specific libraries
+logging.getLogger("llama_model_loader").setLevel(logging.ERROR)
 
 class Utils:
     EMBEDDING_MODEL_NAME = "hkunlp/instructor-large"
